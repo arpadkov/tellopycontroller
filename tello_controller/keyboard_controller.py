@@ -1,4 +1,4 @@
-from tellopycontroller.tello_controller.tello_controller import TelloRcController
+from tellopycontroller.tello_controller.tello_controller import TelloRcController, TelloCameraWidget
 from tellopycontroller.tello_controller.rc_controls import RcControl
 
 from PyQt5 import QtCore, QtWidgets, QtGui
@@ -14,8 +14,13 @@ class KeyboardController(TelloRcController):
 
         self.control_panel = KeyboardControlPanel()
 
+        self.camera = KeyboardControlCamera()
+
         self.control_read_thread = ControlsReadThread(self)
         self.control_read_thread.start()
+
+        self.layout.addWidget(self.camera)
+        self.layout.addWidget(self.control_panel)
 
 
 class ControlsReadThread(QtCore.QThread):
@@ -37,6 +42,13 @@ class ControlsReadThread(QtCore.QThread):
             self.controller.set_speed_from_rc_controls(active_rc_controls)
 
             time.sleep(0.1)
+
+
+class KeyboardControlCamera(TelloCameraWidget):
+
+    def __init__(self):
+        super(KeyboardControlCamera, self).__init__()
+
 
 
 class KeyboardControlPanel(QtWidgets.QWidget):

@@ -3,10 +3,11 @@ from tellopycontroller.hand_handler import HandHandler
 from tellopycontroller.gesture_data.gestures import Gesture
 from tellopycontroller.tello_controller.keyboard_controller import KeyboardController
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 import tensorflow as tf
 import sys
+import os
 import numpy as np
 
 
@@ -39,24 +40,65 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.layout = QtWidgets.QHBoxLayout()
 
-        self.camera_widget = CameraWidget()
+        # self.camera_widget = CameraWidget()
 
         self.handler = HandHandler()
 
-        self.controller = KeyboardController()
+        self.controller_widget = KeyboardController()
 
-        self.prediction_thread = PredictionThread(self)
+        # self.prediction_thread = PredictionThread(self)
 
-        self.camera_widget.change_hand_landmarks.connect(self.handler.hand_landmarks_change)
+        # self.camera_widget.change_hand_landmarks.connect(self.handler.hand_landmarks_change)
 
-        self.layout.addWidget(self.camera_widget)
-        self.layout.addWidget(self.controller.control_panel)
+        self.info_panel = InfoPanel()
 
-        self.prediction_thread.start()
+        self.layout.addWidget(self.info_panel)
+
+        # self.layout.addWidget(self.camera_widget)
+
+        self.layout.addWidget(self.controller_widget)
+
+        # self.prediction_thread.start()
 
         window = QtWidgets.QWidget()
         window.setLayout(self.layout)
         self.setCentralWidget(window)
+
+
+class InfoPanel(QtWidgets.QWidget):
+
+    def __init__(self):
+        super(InfoPanel, self).__init__()
+
+        # self.drone_command_visual = DroneCommandVisual()
+
+        self.layout = QtWidgets.QGridLayout()
+
+
+
+
+
+        # self.layout.addWidget(self.drone_command_visual, 0, 0)
+
+        self.setLayout(self.layout)
+
+
+
+class DroneCommandVisual(QtWidgets.QWidget):
+
+    def __init__(self):
+        super(DroneCommandVisual, self).__init__()
+
+        self.icon_name = QtGui.QPixmap(os.path.join(os.getcwd(), 'GUI', 'icons', 'arrows', f'arrow_up.png'))
+
+        self.setPixmap(self.icon_name)
+
+        self.setScaledContents(True)
+
+        self.setFixedSize(50, 50)
+
+
+
 
 
 if __name__ == '__main__':

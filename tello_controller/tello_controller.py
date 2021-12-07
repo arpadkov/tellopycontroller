@@ -10,6 +10,8 @@ import cv2 as cv
 
 class SendControlThread(QtCore.QThread):
 
+    rc_controls_command = QtCore.pyqtSignal(object)
+
     def __init__(self, controller):
         super(SendControlThread, self).__init__()
 
@@ -17,21 +19,30 @@ class SendControlThread(QtCore.QThread):
 
     def run(self):
         while True:
-            print(self.controller.for_back_velocity,
-                  self.controller.left_right_velocity,
-                  self.controller.up_down_velocity,
-                  self.controller.yaw_velocity)
+
+            rc_controls = (
+                self.controller.for_back_velocity,
+                self.controller.left_right_velocity,
+                self.controller.up_down_velocity,
+                self.controller.yaw_velocity)
+
+            self.rc_controls_command.emit(rc_controls)
+
+            print(rc_controls)
 
             time.sleep(0.1)
 
 
-class TelloRcController:
+class TelloRcController(QtWidgets.QWidget):
+    """
+    has to be subclassed as a controller
+    """
 
     def __init__(self):
+        super(TelloRcController, self).__init__()
 
-        self.control_panel = QtWidgets.QWidget()
-
-        self.camera_panel = None
+        self.layout = QtWidgets.QHBoxLayout()
+        self.setLayout(self.layout)
 
         self.drone = Tello()
 
@@ -106,10 +117,17 @@ class TelloCameraWidget(QtWidgets.QLabel):
         pixmap = qt_format.scaled(display_width, display_height, QtCore.Qt.KeepAspectRatio)
         return QtGui.QPixmap.fromImage(pixmap)
 
+    def draw_on_image(self):
+        self.qt_image = self.convert_cv_to_qt(self.cv_image, self.disply_width, self.display_height)
+
     @QtCore.pyqtSlot(np.ndarray)
     def update_image(self, cv_image):
-        qt_image = self.convert_cv_to_qt(cv_image, self.disply_width, self.display_height)
-        self.setPixmap(qt_image)
+
+        self.cv_image = cv_image
+
+        self.draw_on_image()
+
+        self.setPixmap(self.qt_image)
 
 
 
