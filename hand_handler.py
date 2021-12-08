@@ -42,7 +42,7 @@ class HandHandler:
 
         self.hand_landmarks = hand_landmarks
         self.handedness = handedness
-        self.image = cv_image
+        self.image = cv_image   # should be removed, HandHandler does not need the image, only image size
 
         self.sort_hands()
 

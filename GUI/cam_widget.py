@@ -73,7 +73,7 @@ class CameraWidget(QtWidgets.QLabel):
 
         # self.setFixedSize(500, 500)
 
-        self.disply_width = 640
+        self.dispaly_width = 640
         self.display_height = 480
 
         self.video_thread = VideoCaptureThread()
@@ -83,7 +83,7 @@ class CameraWidget(QtWidgets.QLabel):
 
     @QtCore.pyqtSlot(np.ndarray, object, object)
     def update_image(self, cv_image, hand_landmarks, handedness):
-        qt_image = convert_cv_to_qt(cv_image, self.disply_width, self.display_height)
+        qt_image = convert_cv_to_qt(cv_image, self.display_width, self.display_height)
         self.setPixmap(qt_image)
 
         # if hand_landmarks:

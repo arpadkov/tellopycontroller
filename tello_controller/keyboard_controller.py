@@ -19,8 +19,17 @@ class KeyboardController(TelloRcController):
         self.control_read_thread = ControlsReadThread(self)
         self.control_read_thread.start()
 
-        self.layout.addWidget(self.camera)
-        self.layout.addWidget(self.control_panel)
+        self.ui_widget.layout.addWidget(self.camera)
+        self.ui_widget.layout.addWidget(self.control_panel)
+
+    def destroy(self):
+        print('finishing_threads')
+
+        self.sender_thread.terminate()
+        self.camera.video_thread.release()
+        self.camera.video_thread.terminate()
+
+        self.ui_widget.deleteLater()
 
 
 class ControlsReadThread(QtCore.QThread):
@@ -48,6 +57,10 @@ class KeyboardControlCamera(TelloCameraWidget):
 
     def __init__(self):
         super(KeyboardControlCamera, self).__init__()
+
+
+    def handle_image(self):
+        pass
 
 
 
