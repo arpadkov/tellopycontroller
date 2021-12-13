@@ -82,7 +82,13 @@ class KeyboardControlPanel(QtWidgets.QWidget):
         self.rotate_left_button = ArrowButton(RcControl.RotateLeft, QtCore.Qt.Key_Q, (1, 0), self)
         self.rotate_right_button = ArrowButton(RcControl.RotateRight, QtCore.Qt.Key_E, (1, 2), self)
 
+        self.test_shortcut = QtWidgets.QShortcut(QtGui.QKeySequence('Left'), self)
+        self.test_shortcut.activated.connect(self.shortcut)
+
         self.setLayout(self.layout)
+
+    def shortcut(self):
+        print('hey')
 
     def keyPressEvent(self, event: QtGui.QKeyEvent) -> None:
         """

@@ -151,7 +151,7 @@ class VideoCaptureThread(QtCore.QThread):
         # self.cap = cv.VideoCapture(0, cv.CAP_DSHOW)
 
     def run(self):
-        print('STARTING CAMERA')
+        # print('STARTING CAMERA')
         while True:
             success, cv_image = self.cap.read()
             if success:
