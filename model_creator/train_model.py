@@ -6,7 +6,7 @@ import tensorflow as tf
 
 model_file = os.path.join(os.path.dirname(os.getcwd()), 'keras_gesture_model')
 
-dataset_dir = os.path.join(os.path.dirname(os.getcwd()), 'model')
+dataset_dir = os.path.join(os.path.dirname(os.getcwd()), 'gesture_data')
 
 output_shape = len(Gesture)
 
