@@ -1,5 +1,6 @@
 from tellopycontroller.tello_controller.keyboard_controller import KeyboardController
 from tellopycontroller.tello_controller.gesture_controller import GestureController
+from tellopycontroller.tello_controller.handfollow_controller import HandFollowController
 from tellopycontroller.tello_controller.tello_controller import TelloRcController
 
 from PyQt5 import QtCore, QtWidgets, QtGui
@@ -11,6 +12,7 @@ class ControllerType(Enum):
 
     KeyboardController = 1
     GestureController = 2
+    HandFollowController = 3
 
 
 class MainControlPanel(QtWidgets.QWidget):
@@ -24,12 +26,10 @@ class MainControlPanel(QtWidgets.QWidget):
 
         self.controllers = {
             ControllerType.KeyboardController: KeyboardController,
-            ControllerType.GestureController: GestureController
+            ControllerType.GestureController: GestureController,
+            ControllerType.HandFollowController: HandFollowController
         }
 
-
-
-        # self.controller_type = ControllerType.GestureController
         self.controller_type = ControllerType.KeyboardController
         self.controller = KeyboardController()
 
@@ -51,6 +51,8 @@ class MainControlPanel(QtWidgets.QWidget):
         self.controller.sender_thread.rc_controls_command.connect(self.drone_command_visual.update_rc_control)
 
         self.setLayout(self.layout)
+
+        self.set_controller(ControllerType.HandFollowController)
 
     def update_fps_label(self, fps_count):
         self.fps_label.setText(f'FPS: {round(fps_count, 2)}')
@@ -154,10 +156,13 @@ class RcControlFeedback(QtWidgets.QWidget):
         self.layout = QtWidgets.QHBoxLayout()
 
         self.positive_label = QtWidgets.QLabel(self.positive_name)
-        self.positive_label.setFixedWidth(100)
+        self.positive_label.setFixedWidth(120)
 
         self.negative_label = QtWidgets.QLabel(self.negative_name)
-        self.negative_label.setFixedWidth(100)
+        self.negative_label.setFixedWidth(120)
+
+        self.negative_label.setFont(QtGui.QFont('Arial', 14))
+        self.positive_label.setFont(QtGui.QFont('Arial', 14))
 
         self.layout.addWidget(self.positive_label)
         self.layout.addWidget(self.negative_label)
@@ -168,15 +173,24 @@ class RcControlFeedback(QtWidgets.QWidget):
         if speed:
             self.highlight_positive() if speed > 0 else self.highlight_negative()
         else:
-            self.negative_label.setFont(QtGui.QFont('Arial', 10))
-            self.positive_label.setFont(QtGui.QFont('Arial', 10))
+            # self.negative_label.setFont(QtGui.QFont('Arial', 10))
+            # self.positive_label.setFont(QtGui.QFont('Arial', 10))
+
+            self.negative_label.setStyleSheet("background-color: """)
+            self.positive_label.setStyleSheet("background-color: """)
 
     def highlight_positive(self):
-        self.negative_label.setFont(QtGui.QFont('Arial', 10))
-        self.positive_label.setFont(QtGui.QFont('Arial', 14))
+        # self.negative_label.setFont(QtGui.QFont('Arial', 10))
+        self.negative_label.setStyleSheet("background-color: """)
+
+        # self.positive_label.setFont(QtGui.QFont('Arial', 14))
+        self.positive_label.setStyleSheet("background-color: lightgreen; border: 1px solid black;")
 
     def highlight_negative(self):
-        self.negative_label.setFont(QtGui.QFont('Arial', 14))
-        self.positive_label.setFont(QtGui.QFont('Arial', 10))
+        # self.negative_label.setFont(QtGui.QFont('Arial', 14))
+        self.negative_label.setStyleSheet("background-color: lightgreen; border: 1px solid black;")
+
+        # self.positive_label.setFont(QtGui.QFont('Arial', 10))
+        self.positive_label.setStyleSheet("background-color: """)
 
 

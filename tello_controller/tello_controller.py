@@ -135,7 +135,17 @@ class TelloRcController:
                 setattr(self, attribute, 0)
 
     def destroy(self):
-        pass
+
+        self.sender_thread.terminate()
+
+        if self.camera:
+            self.camera.video_thread.release()
+            self.camera.video_thread.terminate()
+
+        if self.ui_widget:
+            self.ui_widget.deleteLater()
+
+        self.finish_threads()
 
 
 class VideoCaptureThread(QtCore.QThread):

@@ -92,15 +92,10 @@ class GestureController(TelloRcController):
     def zero_rc_controls(self):
         self.set_speed_from_rc_controls([])
 
-    def destroy(self):
-        print('finishing_threads')
+    def finish_threads(self):
 
-        self.sender_thread.terminate()
         self.prediction_thread.terminate()
-        self.camera.video_thread.release()
-        self.camera.video_thread.terminate()
 
-        self.ui_widget.deleteLater()
 
 class GestureControlPanel(QtWidgets.QWidget):
 
