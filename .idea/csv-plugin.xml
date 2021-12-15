@@ -10,6 +10,20 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\tello_controllers\gesture_controller\gesture_data\Backward.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\tello_controllers\gesture_controller\gesture_data\Up.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

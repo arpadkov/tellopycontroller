@@ -56,7 +56,7 @@ class GestureControlCamera(TelloCameraWidget):
                         mp_styles.get_default_hand_connections_style(),
                     )
 
-        self.hand_landmarks_changed.emit(results.multi_hand_landmarks, results.multi_handedness, cv_image_copy)
+        self.hand_landmarks_changed.emit(results.multi_hand_landmarks, results.multi_handedness, self.cv_image)
 
         # return cv_image, results.multi_hand_landmarks, results.multi_handedness
         # self.cv_image = cv_image

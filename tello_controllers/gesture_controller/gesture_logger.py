@@ -18,6 +18,7 @@ def log_to_csv(number, land_list, csv_file):
 class LogThreadPulse(QtCore.QThread):
 
     write_time = QtCore.pyqtSignal(int)
+    finished_logging = QtCore.pyqtSignal()
 
     def __init__(self, datapoints, sleep_time, wait_time):
         super(LogThreadPulse, self).__init__()
@@ -46,17 +47,20 @@ class LogThreadPulse(QtCore.QThread):
             self.write_time.emit(point)
             time.sleep(self.sleep_time)
 
+        self.finished_logging.emit()
+
 
 class GestureLogger:
 
-    def __init__(self, hand_handler):
+    def __init__(self, hand_handler, gesture_dataset_dir):
 
         self.hand_handler = hand_handler
 
         self.gesture = Gesture.Up
         self.clear_data = False
 
-        self.csv_path = os.path.join(os.path.dirname(os.getcwd()), 'model')
+        self.gesture_dataset_dir = gesture_dataset_dir
+        self.csv_file = None
 
         self.datapoints = 20
 
@@ -68,28 +72,28 @@ class GestureLogger:
         # self.index = self.control_panel.gesture_selector.currentIndex()
         # self.gesture = self.control_panel.gesture_selector.options[self.index]
 
-        csv_file = os.path.join(self.csv_path, self.gesture.name.capitalize() + '.csv')
+        self.csv_file = os.path.join(self.gesture_dataset_dir, self.gesture.name.capitalize() + '.csv')
 
         # clear = self.control_panel.clear_checkbox.checkState()
 
         if self.clear_data:
-            os.remove(csv_file)
+            os.remove(self.csv_file)
 
         self.timer_thread.start()
 
     def log_datapoint(self, point):
-        print('LOGGING')
+        # print('LOGGING')
 
-        # if point == 1:
-        #     cv.imwrite(os.path.join(self.csv_path, self.gesture.name.capitalize()+'.png'), self.hand_handler.image)
-        #
-        # print(f'Logged point {point + 1}/{self.datapoints}')
-        #
-        # pre_processed_landmark_list = self.hand_handler.get_preprocessed_landmark_list()
-        #
-        # log_to_csv(
-        #     number=self.gesture.value,
-        #     land_list=pre_processed_landmark_list,
-        #     csv_file=self.csv_file
-        # )
+        if point == 1:
+            cv.imwrite(os.path.join(self.gesture_dataset_dir, self.gesture.name.capitalize()+'.png'), self.hand_handler.image)
+
+        print(f'Logged point {point + 1}/{self.datapoints}')
+
+        pre_processed_landmark_list = self.hand_handler.get_preprocessed_landmark_list()
+
+        log_to_csv(
+            number=self.gesture.value,
+            land_list=pre_processed_landmark_list,
+            csv_file=self.csv_file
+        )
 

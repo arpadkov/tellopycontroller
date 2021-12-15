@@ -51,7 +51,7 @@ class MainControlPanel(QtWidgets.QWidget):
 
         self.setLayout(self.layout)
 
-        self.set_controller(ControllerType.GestureController)
+        self.set_controller(ControllerType.KeyboardController)
 
     def update_fps_label(self, fps_count):
         self.fps_label.setText(f'FPS: {round(fps_count, 2)}')
@@ -169,6 +169,7 @@ class RcControlFeedback(QtWidgets.QWidget):
         self.setLayout(self.layout)
 
     def highlight_control(self, speed):
+        # print(speed)
         if speed:
             self.highlight_positive() if speed > 0 else self.highlight_negative()
         else:

@@ -12,20 +12,21 @@ class PredictionThread(QtCore.QThread):
     gesture_changed = QtCore.pyqtSignal(Gesture, object)
     no_gesture_recognized = QtCore.pyqtSignal()
 
-    def __init__(self, handler):
+    def __init__(self, handler, keras_model_dir):
         super(PredictionThread, self).__init__()
 
         self.handler = handler
+        self.keras_model = tf.keras.models.load_model(keras_model_dir)
 
     def run(self):
 
-        model_dir = os.path.join(os.getcwd(), 'tello_controllers', 'gesture_controller', 'keras_gesture_model')
-        model = tf.keras.models.load_model(model_dir)
+        # model_dir = os.path.join(os.getcwd(), 'tello_controllers', 'gesture_controller', 'keras_gesture_model')
+        # keras_model = tf.keras.models.load_model(model_dir)
 
         while True:
             pre_processed_landmark_list = self.handler.get_preprocessed_landmark_list()
 
-            prediction = model.predict(np.array([pre_processed_landmark_list]))
+            prediction = self.keras_model.predict(np.array([pre_processed_landmark_list]))
             gesture_id = np.argmax(prediction)
 
             if np.amax(prediction) > 0.8:

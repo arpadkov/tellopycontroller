@@ -7,8 +7,11 @@ from PyQt5 import QtCore, QtWidgets
 class GestureControlPanel(QtWidgets.QWidget):
 
     start_logging = QtCore.pyqtSignal()
+
     start_controlling = QtCore.pyqtSignal()
     stop_controlling = QtCore.pyqtSignal()
+
+    train_model_signal = QtCore.pyqtSignal()
 
     def __init__(self, logger: GestureLogger):
         super(GestureControlPanel, self).__init__()
@@ -31,11 +34,18 @@ class GestureControlPanel(QtWidgets.QWidget):
         self.clear_checkbox = QtWidgets.QCheckBox('Clear existing datapoints')
         self.clear_checkbox.stateChanged.connect(self.checkbox_changed)
 
+        self.train_model_button = QtWidgets.QPushButton('Train model')
+        self.train_model_button.clicked.connect(self.train_model)
+
+        self.status_label = QtWidgets.QLabel('Waiting')
+
         self.layout.addWidget(self.start_controlling_button)
         self.layout.addWidget(self.stop_controlling_button)
         self.layout.addWidget(self.gesture_selector)
         self.layout.addWidget(self.start_logging_button)
         self.layout.addWidget(self.clear_checkbox)
+        self.layout.addWidget(self.train_model_button)
+        self.layout.addWidget(self.status_label)
 
         self.setLayout(self.layout)
 
@@ -48,8 +58,14 @@ class GestureControlPanel(QtWidgets.QWidget):
     def stop_controlling_button_pressed(self):
         self.stop_controlling.emit()
 
+    def train_model(self):
+        self.train_model_signal.emit()
+
     def checkbox_changed(self):
         self.logger.clear_data = self.clear_checkbox.checkState()
+
+    def set_status_label(self, label: str):
+        self.status_label.setText(label)
 
 
 class GestureSelector(QtWidgets.QComboBox):

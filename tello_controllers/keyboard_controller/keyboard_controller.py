@@ -1,5 +1,5 @@
-from tellopycontroller.tello_controllers.tello_controller import TelloRcController, TelloCameraWidget
-from tellopycontroller.tello_controllers.rc_controls import RcControl
+from tello_controllers.tello_controller import TelloRcController, TelloCameraWidget
+from tello_controllers.rc_controls import RcControl
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
@@ -25,8 +25,6 @@ class KeyboardController(TelloRcController):
     def finish_threads(self):
 
         self.control_read_thread.terminate()
-
-
 
 
 class ControlsReadThread(QtCore.QThread):
@@ -57,7 +55,6 @@ class KeyboardControlCamera(TelloCameraWidget):
 
     def handle_image(self):
         pass
-
 
 
 class KeyboardControlPanel(QtWidgets.QWidget):
