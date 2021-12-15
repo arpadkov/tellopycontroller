@@ -1,10 +1,9 @@
-from tellopycontroller.tello_controller.keyboard_controller import KeyboardController
-from tellopycontroller.tello_controller.gesture_controller import GestureController
-from tellopycontroller.tello_controller.handfollow_controller import HandFollowController
-from tellopycontroller.tello_controller.tello_controller import TelloRcController
+from tello_controllers.keyboard_controller.keyboard_controller import KeyboardController
+from tello_controllers.gesture_controller.gesture_controller import GestureController
+from tello_controllers.handfollow_controller.handfollow_controller import HandFollowController
+from tellopycontroller.tello_controllers.tello_controller import TelloRcController
 
 from PyQt5 import QtCore, QtWidgets, QtGui
-import pyqtgraph as pg
 from enum import Enum
 
 
@@ -52,7 +51,7 @@ class MainControlPanel(QtWidgets.QWidget):
 
         self.setLayout(self.layout)
 
-        self.set_controller(ControllerType.HandFollowController)
+        self.set_controller(ControllerType.GestureController)
 
     def update_fps_label(self, fps_count):
         self.fps_label.setText(f'FPS: {round(fps_count, 2)}')

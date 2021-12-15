@@ -1,6 +1,6 @@
-from tellopycontroller.gesture_data.gestures import Gesture
+from tello_controllers.gesture_controller.gesture_data.gestures import Gesture
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 
 class ControlPanel(QtWidgets.QWidget):

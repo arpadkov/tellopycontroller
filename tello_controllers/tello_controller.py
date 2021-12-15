@@ -1,4 +1,4 @@
-from tellopycontroller.tello_controller.rc_controls import RcControl
+from tello_controllers.rc_controls import RcControl
 
 from djitellopy import Tello
 from PyQt5 import QtCore, QtWidgets, QtGui
@@ -63,7 +63,7 @@ class SendControlThread(QtCore.QThread):
 
             self.rc_controls_command.emit(rc_controls)
 
-            # print(rc_controls)
+            # print(self.controller.up_down_velocity)
 
             time.sleep(0.1)
 
@@ -105,7 +105,6 @@ class TelloRcController:
         self.speed = 20
 
         self.sender_thread = SendControlThread(self)
-        self.sender_thread.start()
 
         self.speed_controls = {
             'for_back_velocity': (RcControl.Forward, RcControl.Backward),           # (positive value, negative value)
@@ -118,6 +117,8 @@ class TelloRcController:
         self.ui_widget.layout = QtWidgets.QHBoxLayout()
         self.ui_widget.setLayout(self.ui_widget.layout)
         # main_window.layout.addWidget(self.ui_widget, 0, 1)
+
+        self.sender_thread.start()
 
     def set_speed_from_rc_controls(self, rc_controls: list[RcControl]):
 
@@ -133,6 +134,7 @@ class TelloRcController:
 
             else:
                 setattr(self, attribute, 0)
+
 
     def destroy(self):
 

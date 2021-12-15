@@ -1,4 +1,4 @@
-from tellopycontroller.gesture_data.gestures import Gesture
+from tello_controllers.gesture_controller.gesture_data.gestures import Gesture
 
 import os
 import numpy as np

@@ -1,6 +1,6 @@
 from tellopycontroller.GUI.cam_widget import CameraWidget
-from model_creator.control_panel import ControlPanel
-from tellopycontroller.hand_handler import HandHandler
+from tello_controllers.gesture_controller.model_creator.control_panel import ControlPanel
+from tello_controllers.gesture_controller.hand_handler import HandHandler
 # from gesture_tellocontroll.model.gestures import Gesture
 
 from PyQt5 import QtCore, QtWidgets

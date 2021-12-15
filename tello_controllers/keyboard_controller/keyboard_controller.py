@@ -1,5 +1,5 @@
-from tellopycontroller.tello_controller.tello_controller import TelloRcController, TelloCameraWidget
-from tellopycontroller.tello_controller.rc_controls import RcControl
+from tellopycontroller.tello_controllers.tello_controller import TelloRcController, TelloCameraWidget
+from tellopycontroller.tello_controllers.rc_controls import RcControl
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
