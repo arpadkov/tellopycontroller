@@ -20,8 +20,8 @@ class GestureControllerState(Enum):
 
 class GestureController(TelloRcController):
 
-    def __init__(self):
-        super(GestureController, self).__init__()
+    def __init__(self, lateral_speed, yaw_speed):
+        super(GestureController, self).__init__(lateral_speed, yaw_speed)
 
         self.gesture_dataset_dir =\
             os.path.join(os.getcwd(), 'tello_controllers', 'gesture_controller', 'gesture_data')

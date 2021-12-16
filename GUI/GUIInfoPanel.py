@@ -6,6 +6,8 @@ from tellopycontroller.tello_controllers.tello_controller import TelloRcControll
 from PyQt5 import QtCore, QtWidgets, QtGui
 from enum import Enum
 
+main_font = QtGui.QFont('Arial', 14)
+
 
 class ControllerType(Enum):
 
@@ -29,13 +31,17 @@ class MainControlPanel(QtWidgets.QWidget):
             ControllerType.HandFollowController: HandFollowController
         }
 
-        self.controller_type = ControllerType.KeyboardController
-        self.controller = KeyboardController()
+        self.lateral_speed = 50
+        self.yaw_speed = 50
 
-        self.drone_command_visual = DroneCommandVisual(self.controller)
+        self.controller_type = ControllerType.KeyboardController
+        self.controller = KeyboardController(self.lateral_speed, self.yaw_speed)
+
+        self.drone_command_visual = DroneCommandVisual(self.lateral_speed, self.yaw_speed)
+        self.drone_command_visual.speed_setting_changed.connect(self.set_control_speed)
 
         self.fps_label = QtWidgets.QLabel()
-        self.fps_label.setFont(QtGui.QFont('Arial', 12))
+        self.fps_label.setFont(main_font)
         self.controller.camera.fps_count.connect(self.update_fps_label)
 
         self.controller_selection = ControllerSelector(self)
@@ -51,7 +57,7 @@ class MainControlPanel(QtWidgets.QWidget):
 
         self.setLayout(self.layout)
 
-        self.set_controller(ControllerType.KeyboardController)
+        # self.set_controller(ControllerType.KeyboardController)
 
     def update_fps_label(self, fps_count):
         self.fps_label.setText(f'FPS: {round(fps_count, 2)}')
@@ -59,15 +65,21 @@ class MainControlPanel(QtWidgets.QWidget):
     def set_controller(self, controller_type: ControllerType):
         if hasattr(self, 'controller') and self.controller:
             self.controller.destroy()
+            del self.controller
 
-        self.controller = self.controllers.get(controller_type)()
+        self.controller = self.controllers.get(controller_type)(self.lateral_speed, self.yaw_speed)
         self.controller_type = controller_type
 
         self.layout.addWidget(self.controller.ui_widget)
         self.controller.sender_thread.rc_controls_command.connect(self.drone_command_visual.update_rc_control)
         self.controller.camera.fps_count.connect(self.update_fps_label)
 
+        self.drone_command_visual.update_speeds()
+
         self.data_changed.emit()
+
+    def set_control_speed(self, controller_speed, value):
+        setattr(self.controller, controller_speed, value)
 
 
 class ControllerSelector(QtWidgets.QComboBox):
@@ -85,6 +97,8 @@ class ControllerSelector(QtWidgets.QComboBox):
         for name in self.names:
             self.addItem(name)
 
+        self.setFont(main_font)
+
         self.currentIndexChanged.connect(self.index_changed)
         self.control_panel.data_changed.connect(self.value_changed)
 
@@ -101,32 +115,36 @@ class ControllerSelector(QtWidgets.QComboBox):
 
 class DroneCommandVisual(QtWidgets.QWidget):
 
-    def __init__(self, controller: TelloRcController):
+    speed_setting_changed = QtCore.pyqtSignal(str, int)
+
+    def __init__(self, lateral_speed, yaw_speed):
         super(DroneCommandVisual, self).__init__()
 
-        self.controller = controller
+        self.lateral_speed = lateral_speed
+        self.yaw_speed = yaw_speed
 
         self.layout = QtWidgets.QGridLayout()
 
-        self.forward_info = RcControlFeedback(self.controller, ('Forward', 'Backward'))
+        self.forward_info = RcControlFeedback(('Forward', 'Backward'))
         self.layout.addWidget(self.forward_info)
 
-        self.leftrigth_info = RcControlFeedback(self.controller, ('Left', 'Right'))
-        self.layout.addWidget(self.leftrigth_info)
+        self.leftright_info = RcControlFeedback(('Left', 'Right'))
+        self.layout.addWidget(self.leftright_info)
 
-        self.updown_info = RcControlFeedback(self.controller, ('Up', 'Down'))
+        self.updown_info = RcControlFeedback(('Up', 'Down'))
         self.layout.addWidget(self.updown_info)
 
-        self.yaw_info = RcControlFeedback(self.controller, ('RotateLeft', 'RotateRight'))
+        self.yaw_info = RcControlFeedback(('RotateLeft', 'RotateRight'))
         self.layout.addWidget(self.yaw_info)
 
-        self.speed_setting = QtWidgets.QSpinBox()
-        self.speed_setting.setMinimum(0)
-        self.speed_setting.setMaximum(100)
-        self.speed_setting.setValue(self.controller.speed)
-        self.speed_setting.valueChanged.connect(self.set_control_speed)
+        self.lateral_speed_setting = DirectionalSpeedSet(SpeedDirection.Lateral, self.lateral_speed)
+        self.lateral_speed_setting.speed_setting_changed.connect(self.set_control_speed)
 
-        self.layout.addWidget(self.speed_setting)
+        self.yaw_speed_setting = DirectionalSpeedSet(SpeedDirection.Yaw, self.yaw_speed)
+        self.yaw_speed_setting.speed_setting_changed.connect(self.set_control_speed)
+
+        self.layout.addWidget(self.lateral_speed_setting)
+        self.layout.addWidget(self.yaw_speed_setting)
 
         self.setLayout(self.layout)
 
@@ -136,20 +154,68 @@ class DroneCommandVisual(QtWidgets.QWidget):
         forw, leftr, updown, yaw = rc_control
 
         self.forward_info.highlight_control(forw)
-        self.leftrigth_info.highlight_control(leftr)
+        self.leftright_info.highlight_control(leftr)
         self.updown_info.highlight_control(updown)
         self.yaw_info.highlight_control(yaw)
 
+    def set_control_speed(self, controller_speed, value):
+        self.speed_setting_changed.emit(controller_speed, value)
+
+    def update_speeds(self):
+        self.lateral_speed_setting.spin_box.setValue(self.lateral_speed)
+        self.yaw_speed_setting.spin_box.setValue(self.yaw_speed)
+
+
+class SpeedDirection(Enum):
+
+    Lateral = 1
+    Yaw = 2
+
+
+class DirectionalSpeedSet(QtWidgets.QWidget):
+
+    speed_setting_changed = QtCore.pyqtSignal(str, int)
+
+    controller_speeds = {
+        SpeedDirection.Lateral: 'lateral_speed',
+        SpeedDirection.Yaw: 'yaw_speed'
+    }
+    
+    def __init__(self, direction: SpeedDirection, initial_speed):
+        super(DirectionalSpeedSet, self).__init__()
+
+        self.direction = direction
+
+        self.layout = QtWidgets.QHBoxLayout()
+
+        self.label = QtWidgets.QLabel(self.direction.name)
+        self.label.setFont(main_font)
+
+        self.spin_box = QtWidgets.QSpinBox()
+        self.spin_box.setFont(main_font)
+
+        # initial_speed = getattr(self.controller, self.controller_speeds[self.direction])
+        self.spin_box.setValue(initial_speed)
+
+        self.spin_box.setMinimum(0)
+        self.spin_box.setMaximum(100)
+        self.spin_box.valueChanged.connect(self.set_control_speed)
+
+        self.layout.addWidget(self.label)
+        self.layout.addWidget(self.spin_box)
+
+        self.setLayout(self.layout)
+
     def set_control_speed(self, value):
-        self.controller.speed = value
+        controller_speed = self.controller_speeds[self.direction]
+        self.speed_setting_changed.emit(controller_speed, value)
 
 
 class RcControlFeedback(QtWidgets.QWidget):
 
-    def __init__(self, controller: TelloRcController, name: tuple):
+    def __init__(self, name: tuple):
         super(RcControlFeedback, self).__init__()
 
-        self.controller = controller
         self.positive_name, self.negative_name = name
 
         self.layout = QtWidgets.QHBoxLayout()
@@ -160,8 +226,8 @@ class RcControlFeedback(QtWidgets.QWidget):
         self.negative_label = QtWidgets.QLabel(self.negative_name)
         self.negative_label.setFixedWidth(120)
 
-        self.negative_label.setFont(QtGui.QFont('Arial', 14))
-        self.positive_label.setFont(QtGui.QFont('Arial', 14))
+        self.negative_label.setFont(main_font)
+        self.positive_label.setFont(main_font)
 
         self.layout.addWidget(self.positive_label)
         self.layout.addWidget(self.negative_label)

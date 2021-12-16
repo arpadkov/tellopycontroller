@@ -1,4 +1,4 @@
-from tello_controllers.tello_controller import TelloRcController, TelloCameraWidget
+from tello_controllers.tello_controller import TelloRcController
 from tello_controllers.keyboard_controller.UI_control_panel import KeyboardControlPanel
 from tello_controllers.keyboard_controller.UI_camera_widget import KeyboardControlCamera
 
@@ -9,8 +9,8 @@ import time
 
 class KeyboardController(TelloRcController):
 
-    def __init__(self):
-        super(KeyboardController, self).__init__()
+    def __init__(self, lateral_speed, yaw_speed):
+        super(KeyboardController, self).__init__(lateral_speed, yaw_speed)
 
         self.control_panel = KeyboardControlPanel()
 

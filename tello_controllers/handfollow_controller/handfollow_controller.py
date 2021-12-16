@@ -6,8 +6,8 @@ from tello_controllers.handfollow_controller.follower_thread import FollowContro
 
 class HandFollowController(TelloRcController):
 
-    def __init__(self):
-        super(HandFollowController, self).__init__()
+    def __init__(self, lateral_speed, yaw_speed):
+        super(HandFollowController, self).__init__(lateral_speed, yaw_speed)
 
         self.control_panel = HandFollowControlPanel()
         self.control_panel.start_following.connect(self.start_control_thread)

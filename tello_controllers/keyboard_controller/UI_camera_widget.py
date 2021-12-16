@@ -1,4 +1,4 @@
-from tello_controllers.tello_controller import TelloCameraWidget
+from tello_controllers.UI_camera_widget import TelloCameraWidget
 
 
 class KeyboardControlCamera(TelloCameraWidget):
