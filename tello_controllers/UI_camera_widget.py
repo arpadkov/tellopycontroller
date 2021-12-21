@@ -92,7 +92,7 @@ class TelloCameraWidget(QtWidgets.QLabel):
         # self.qt_image = None
 
         self.display_width = 640
-        self.display_height = 480
+        # self.display_height = 480
 
         self.video_thread = VideoCaptureThread(camera_widget=self)
 
@@ -109,7 +109,7 @@ class TelloCameraWidget(QtWidgets.QLabel):
         h, w, ch = rgb_image.shape
         bytes_per_line = ch * w
         qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
-        pixmap = qt_format.scaled(self.display_width, self.display_height, QtCore.Qt.KeepAspectRatio)
+        pixmap = qt_format.scaledToWidth(self.display_width)
         return QtGui.QPixmap.fromImage(pixmap)
 
     @QtCore.pyqtSlot()
@@ -129,5 +129,5 @@ class TelloCameraWidget(QtWidgets.QLabel):
         # qt_image = self.convert_image()
         # time.sleep(0.1)
 
-        self.setPixmap(self.convert_image()) # cv_image converted to qt_image
+        self.setPixmap(self.convert_image())    # cv_image converted to qt_image
 

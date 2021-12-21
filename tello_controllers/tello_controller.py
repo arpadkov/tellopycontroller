@@ -4,6 +4,9 @@ from djitellopy import Tello
 from PyQt5 import QtCore, QtWidgets, QtGui
 
 import time
+import logging
+
+logger = logging.getLogger('Tello controller')
 
 
 class SendControlThread(QtCore.QThread):
@@ -16,6 +19,9 @@ class SendControlThread(QtCore.QThread):
         self.controller = controller
 
     def run(self):
+
+        logger.info('Sending controls started')
+
         while True:
 
             rc_controls = (
@@ -26,7 +32,7 @@ class SendControlThread(QtCore.QThread):
 
             self.rc_controls_command.emit(rc_controls)
 
-            print(rc_controls)
+            # print(rc_controls)
 
             time.sleep(0.1)
 
@@ -88,6 +94,8 @@ class TelloRcController:
 
             else:
                 setattr(self, attribute, 0)
+
+
 
     def destroy(self):
 

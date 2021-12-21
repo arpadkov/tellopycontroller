@@ -5,6 +5,9 @@ from tello_controllers.keyboard_controller.UI_camera_widget import KeyboardContr
 from PyQt5 import QtCore
 
 import time
+import logging
+
+logger = logging.getLogger('Keyboard controller')
 
 
 class KeyboardController(TelloRcController):
@@ -22,6 +25,8 @@ class KeyboardController(TelloRcController):
         self.ui_widget.layout.addWidget(self.camera)
         self.ui_widget.layout.addWidget(self.control_panel)
 
+        # self.ui_widget.setFixedWidth(800)
+
     def finish_threads(self):
 
         self.control_read_thread.terminate()
@@ -35,6 +40,7 @@ class ControlsReadThread(QtCore.QThread):
         self.controller = controller
 
     def run(self):
+
         while True:
 
             active_rc_controls = []

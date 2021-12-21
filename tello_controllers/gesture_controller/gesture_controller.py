@@ -8,7 +8,10 @@ from tello_controllers.gesture_controller.gesture_data.gestures import Gesture
 from tello_controllers.rc_controls import RcControl
 
 import os
+import logging
 from enum import Enum
+
+logger = logging.getLogger('Gesture controller')
 
 
 class GestureControllerState(Enum):

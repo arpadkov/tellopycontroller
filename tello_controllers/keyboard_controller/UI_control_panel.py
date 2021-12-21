@@ -26,6 +26,8 @@ class KeyboardControlPanel(QtWidgets.QWidget):
         self.test_shortcut = QtWidgets.QShortcut(QtGui.QKeySequence('Left'), self)
         self.test_shortcut.activated.connect(self.shortcut)
 
+        self.setFixedSize(300, 300)
+
         self.setLayout(self.layout)
 
     def shortcut(self):
@@ -63,6 +65,8 @@ class ArrowButton(QtWidgets.QPushButton):
         self.key = key
         self.row_position, self.column_position = grid_position
         self.parent = parent
+
+        self.setFixedSize(50, 50)
 
         self.active = False
 
