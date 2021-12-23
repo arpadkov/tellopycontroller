@@ -17,7 +17,7 @@ class KeyboardController(TelloRcController):
 
         self.control_panel = KeyboardControlPanel()
 
-        self.camera = KeyboardControlCamera()
+        self.camera = KeyboardControlCamera(self.drone)
 
         self.control_read_thread = ControlsReadThread(self)
         self.control_read_thread.start()

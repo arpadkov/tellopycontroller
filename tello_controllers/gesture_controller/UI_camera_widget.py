@@ -16,8 +16,8 @@ class GestureControlCamera(TelloCameraWidget):
 
     hand_landmarks_changed = QtCore.pyqtSignal(object, object, object)
 
-    def __init__(self):
-        super(GestureControlCamera, self).__init__()
+    def __init__(self, drone):
+        super(GestureControlCamera, self).__init__(drone)
 
 
     def detect_hands(self):

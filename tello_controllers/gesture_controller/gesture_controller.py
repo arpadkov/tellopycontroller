@@ -32,9 +32,7 @@ class GestureController(TelloRcController):
         self.keras_model_dir =\
             os.path.join(os.getcwd(), 'tello_controllers', 'gesture_controller', 'keras_gesture_model')
 
-
-
-        self.camera = GestureControlCamera()
+        self.camera = GestureControlCamera(self.drone)
 
         self.hand_handler = HandHandler()
 

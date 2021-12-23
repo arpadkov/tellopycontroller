@@ -1,7 +1,7 @@
-
 from PyQt5 import QtCore, QtWidgets, QtGui
 
 from collections import deque
+import time
 import cv2 as cv
 
 
@@ -29,27 +29,51 @@ class DroneVideoCaptureThread(QtCore.QThread):
     # change_pixmap_signal = QtCore.pyqtSignal(np.ndarray)
     change_pixmap_signal = QtCore.pyqtSignal()
 
-    def __init__(self, camera_widget):
+    def __init__(self, camera_widget, drone):
         super(DroneVideoCaptureThread, self).__init__()
 
         self.camera_widget = camera_widget
-        self.cap = cv.VideoCapture(0)
+        # self.cap = cv.VideoCapture(0)
+        self.cap = None
+        # self.cap = drone.get_video_capture()
+
+        self.drone = drone
+        self.frame_read = drone.get_frame_read()
         # self.cap = cv.VideoCapture(0, cv.CAP_DSHOW)
 
     def run(self):
-        # print('STARTING CAMERA')
+
         while True:
-            success, cv_image = self.cap.read()
-            if success:
-                fps = self.cap.get(cv.CAP_PROP_FPS)
-                self.camera_widget.cv_image = cv.flip(cv_image, 1)
-                self.camera_widget.handle_image()
-                # self.change_pixmap_signal.emit(cv_image)
-                self.change_pixmap_signal.emit()
-                # time.sleep(0.1)
+
+            # if not self.cap:
+            #     self.drone.streamon()
+            #     self.cap = self.drone.get_video_capture()
+            #
+            # success, cv_image = self.cap.read()
+            # if success:
+            #     fps = self.cap.get(cv.CAP_PROP_FPS)
+            #     self.camera_widget.cv_image = cv.flip(cv_image, 1)
+            #     self.camera_widget.handle_image()
+            #     # self.change_pixmap_signal.emit(cv_image)
+            #     self.change_pixmap_signal.emit()
+            #     # time.sleep(0.1)
+
+            # print(self.drone.get_frame_read())
+
+            # cv_image = self.frame_read.frame
+
+            cv_image = self.frame_read.frame
+
+
+            self.camera_widget.cv_image = cv.flip(cv_image, 1)
+            self.camera_widget.handle_image()
+            self.change_pixmap_signal.emit()
+
+            time.sleep(0.02)
 
     def release(self):
-        self.cap.release()
+        if self.cap:
+            self.cap.release()
 
 
 class VideoCaptureThread(QtCore.QThread):
@@ -84,22 +108,26 @@ class TelloCameraWidget(QtWidgets.QLabel):
 
     fps_count = QtCore.pyqtSignal(float)
 
-    def __init__(self):
+    def __init__(self, drone):
         super(TelloCameraWidget, self).__init__()
+
+        self.drone = drone
 
         # self.setFixedSize(500, 500)
         # self.cv_image = None
         # self.qt_image = None
 
         self.display_width = 640
+        # self.display_width = 500
         # self.display_height = 480
 
-        self.video_thread = VideoCaptureThread(camera_widget=self)
+        # self.video_thread = VideoCaptureThread(camera_widget=self)
+        self.video_thread = DroneVideoCaptureThread(self, self.drone)
 
         self.cv_fps_calc = CvFpsCalc(buffer_len=10)
 
         self.video_thread.change_pixmap_signal.connect(self.update_image)
-        self.video_thread.start()
+        # self.video_thread.start()
 
     def handle_image(self):
         raise NotImplementedError

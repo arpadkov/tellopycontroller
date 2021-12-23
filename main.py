@@ -7,7 +7,7 @@ from PyQt5 import QtCore, QtWidgets, QtGui
 import sys
 import logging
 
-logging.basicConfig(level='INFO')
+logging.basicConfig(filename='testlog.txt', filemode='w', level='INFO')
 
 logger = logging.getLogger('Tello controller')
 
@@ -22,7 +22,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # self.controller = GestureController()
 
         self.control_panel = MainControlPanel()
-        self.control_panel.controller_changed.connect(self.connect_controller)
+        # self.control_panel.controller_changed.connect(self.connect_controller)
+        self.control_panel.controller_changed_signal.connect(self.connect_controller)
 
         # self.console_widget = Console()
 
@@ -32,8 +33,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.createMenus()
         self.createDockWindows()
 
-        self.control_panel.set_controller(ControllerType.KeyboardController)
-
         self.move(500, 100)
 
         # self.layout.addWidget(self.control_panel.controller.ui_widget, )
@@ -41,6 +40,9 @@ class MainWindow(QtWidgets.QMainWindow):
         window = QtWidgets.QWidget()
         window.setLayout(self.layout)
         self.setCentralWidget(window)
+
+        self.control_panel.set_controller(ControllerType.HandFollowController)
+        # self.control_panel.set_controller(ControllerType.KeyboardController)
 
     def createDockWindows(self):
 
@@ -72,12 +74,44 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def connect_controller(self, controller, controller_type):
         logger.info(f'{controller_type.ui_name} connected')
+
+        self.console_widget.push_local_ns('connect', controller.drone.connect)
+        self.console_widget.push_local_ns('takeoff', controller.drone.takeoff)
+        self.console_widget.push_local_ns('land', controller.drone.land)
+        self.console_widget.push_local_ns('up', controller.drone.move_up)
+        self.console_widget.push_local_ns('down', controller.drone.move_down)
+        self.console_widget.push_local_ns('left', controller.drone.move_left)
+        self.console_widget.push_local_ns('right', controller.drone.move_right)
+        self.console_widget.push_local_ns('for', controller.drone.move_forward)
+        self.console_widget.push_local_ns('back', controller.drone.move_back)
+        self.console_widget.push_local_ns('cw', controller.drone.rotate_clockwise)
+        self.console_widget.push_local_ns('ccw', controller.drone.rotate_counter_clockwise)
+        # self.console_widget.push_local_ns('', controller.drone.)
+
         self.console_widget.push_local_ns('drone', controller.drone)
+
+    # def connect_controller(self, controller, controller_type):
+    #     logger.info(f'{controller_type.ui_name} connected')
+    #
+    #     self.console_widget.push_local_ns('connect', controller.drone.connect)
+    #     self.console_widget.push_local_ns('takeoff', controller.drone.takeoff)
+    #     self.console_widget.push_local_ns('land', controller.drone.land)
+    #     self.console_widget.push_local_ns('up', controller.drone.move_up)
+    #     self.console_widget.push_local_ns('down', controller.drone.move_down)
+    #     self.console_widget.push_local_ns('left', controller.drone.move_left)
+    #     self.console_widget.push_local_ns('right', controller.drone.move_right)
+    #     self.console_widget.push_local_ns('for', controller.drone.move_forward)
+    #     self.console_widget.push_local_ns('back', controller.drone.move_back)
+    #     self.console_widget.push_local_ns('cw', controller.drone.rotate_clockwise)
+    #     self.console_widget.push_local_ns('ccw', controller.drone.rotate_counter_clockwise)
+    #     # self.console_widget.push_local_ns('', controller.drone.)
+    #
+    #     self.console_widget.push_local_ns('drone', controller.drone)
 
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = MainWindow()
-    # window.showMaximized()
-    window.show()
+    window.showMaximized()
+    # window.show()
     sys.exit(app.exec_())

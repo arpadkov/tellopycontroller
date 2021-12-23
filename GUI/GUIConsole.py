@@ -12,4 +12,4 @@ class ConsoleWidget(PythonConsole):
 
         self.eval_in_thread()
 
-        self.setMinimumHeight(200)
+        self.setMinimumHeight(400)

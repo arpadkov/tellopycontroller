@@ -1,4 +1,5 @@
 from PyQt5 import QtCore, QtWidgets, QtGui
+
 from enum import Enum
 
 
@@ -14,16 +15,16 @@ class DroneCommandVisual(QtWidgets.QWidget):
         self.layout = QtWidgets.QGridLayout()
 
         self.forward_info = RcControlFeedback(('Forward', 'Backward'))
-        self.layout.addWidget(self.forward_info)
+        self.layout.addWidget(self.forward_info, 0, 0)
 
         self.leftright_info = RcControlFeedback(('Left', 'Right'))
-        self.layout.addWidget(self.leftright_info)
+        self.layout.addWidget(self.leftright_info, 1, 0)
 
         self.updown_info = RcControlFeedback(('Up', 'Down'))
-        self.layout.addWidget(self.updown_info)
+        self.layout.addWidget(self.updown_info, 2, 0)
 
         self.yaw_info = RcControlFeedback(('RotateLeft', 'RotateRight'))
-        self.layout.addWidget(self.yaw_info)
+        self.layout.addWidget(self.yaw_info, 3, 0)
 
         self.lateral_speed_setting = DirectionalSpeedSet(SpeedDirection.Lateral, self.lateral_speed)
         self.lateral_speed_setting.speed_setting_changed.connect(self.set_control_speed)
@@ -31,8 +32,8 @@ class DroneCommandVisual(QtWidgets.QWidget):
         self.yaw_speed_setting = DirectionalSpeedSet(SpeedDirection.Yaw, self.yaw_speed)
         self.yaw_speed_setting.speed_setting_changed.connect(self.set_control_speed)
 
-        self.layout.addWidget(self.lateral_speed_setting)
-        self.layout.addWidget(self.yaw_speed_setting)
+        self.layout.addWidget(self.lateral_speed_setting, 0, 1)
+        self.layout.addWidget(self.yaw_speed_setting, 1, 1)
 
         self.setLayout(self.layout)
 
@@ -51,6 +52,12 @@ class DroneCommandVisual(QtWidgets.QWidget):
     def update_speeds(self):
         self.lateral_speed_setting.spin_box.setValue(self.lateral_speed)
         self.yaw_speed_setting.spin_box.setValue(self.yaw_speed)
+
+
+
+
+
+
 
 
 class SpeedDirection(Enum):

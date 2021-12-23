@@ -16,11 +16,11 @@ class FollowControlsThread(QtCore.QThread):
     def get_vertical_control(self):
         delta_y = self.controller.hand_position[1]
 
-        if delta_y > self.threshold:
-            return RcControl.Down
-
-        elif delta_y < -self.threshold:
+        if delta_y > self.threshold*2:
             return RcControl.Up
+
+        elif delta_y < -self.threshold*2:
+            return RcControl.Down
 
     def get_yaw_control(self):
         delta_x = self.controller.hand_position[0]
@@ -73,7 +73,7 @@ class FollowControlsThread(QtCore.QThread):
                 active_rc_controls.append(self.get_vertical_control())
                 active_rc_controls.append(self.get_yaw_control())
                 active_rc_controls.append(self.get_horizontal_front_control())
-                active_rc_controls.append(self.get_horizontal_side_control())
+                # active_rc_controls.append(self.get_horizontal_side_control())
 
                 # print(self.controller.hand_position[0], self.controller.hand_position[1])
 

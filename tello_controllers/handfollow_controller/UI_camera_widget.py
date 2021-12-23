@@ -11,12 +11,13 @@ mp_drawing = mp.solutions.drawing_utils
 mp_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
+
 class HandFollowControlCamera(TelloCameraWidget):
 
     hand_position_changed = QtCore.pyqtSignal(object, object)       # hand_position, hand_landmark
 
-    def __init__(self):
-        super(HandFollowControlCamera, self).__init__()
+    def __init__(self, drone):
+        super(HandFollowControlCamera, self).__init__(drone)
 
         self.target_rect_size = None
 
@@ -161,4 +162,4 @@ class HandFollowControlCamera(TelloCameraWidget):
 
     def handle_image(self):
         self.detect_hand()
-
+        # pass

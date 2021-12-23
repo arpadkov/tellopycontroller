@@ -13,10 +13,10 @@ class HandFollowController(TelloRcController):
         self.control_panel.start_following.connect(self.start_control_thread)
         self.control_panel.stop_following.connect(self.stop_control_thread)
 
-        self.camera = HandFollowControlCamera()
+        self.camera = HandFollowControlCamera(self.drone)
         self.camera.hand_position_changed.connect(self.set_hand_position)
 
-        self.control_follow_thread = FollowControlsThread(self, threshold=50)
+        self.control_follow_thread = FollowControlsThread(self, threshold=5)
         # self.control_follow_thread.start()
 
         self.hand_landmark = None
@@ -25,6 +25,12 @@ class HandFollowController(TelloRcController):
 
         self.ui_widget.layout.addWidget(self.camera)
         self.ui_widget.layout.addWidget(self.control_panel)
+
+    def on_tello_takeoff(self):
+        pass
+
+    def on_tello_land(self):
+        self.stop_control_thread()
 
     def set_hand_position(self, hand_position, hand_landmark):
         self.hand_position = hand_position
